@@ -1,0 +1,164 @@
+.comparison-summary {
+  margin-bottom: 2rem;
+}
+
+.comparison-summary h2 {
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.house-value-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #3498db;
+}
+
+.house-value-note .label {
+  font-weight: 600;
+  color: #555;
+}
+
+.house-value-note .value {
+  font-weight: 700;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.house-value-note .note {
+  color: #666;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-left: auto;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.summary-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.2rem;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.pay-off-card h3 {
+  border-bottom-color: #e74c3c;
+}
+
+.invest-card h3 {
+  border-bottom-color: #27ae60;
+}
+
+.difference-card h3 {
+  border-bottom-color: #3498db;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.summary-item.total {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid #eee;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.summary-item .label {
+  color: #666;
+}
+
+.summary-item .value {
+  font-weight: 600;
+  color: #333;
+}
+
+.summary-item .value.positive {
+  color: #27ae60;
+}
+
+.summary-item .value.negative {
+  color: #e74c3c;
+}
+
+.difference-value {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.difference-value .label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.difference-value .value {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.difference-value .recommendation {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
+
+.difference-card.better {
+  border: 2px solid #27ae60;
+}
+
+.difference-card.worse {
+  border: 2px solid #e74c3c;
+}
+
+.invest-pay-card h3 {
+  border-bottom-color: #3498db;
+}
+
+.summary-card {
+  position: relative;
+}
+
+.summary-card.best-scenario {
+  border: 3px solid #f39c12;
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+}
+
+.best-badge {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  background: #f39c12;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+

@@ -1,0 +1,73 @@
+.yearly-breakdown {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.yearly-breakdown h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.breakdown-table-container {
+  overflow-x: auto;
+}
+
+.breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.breakdown-table thead {
+  background-color: #f8f9fa;
+}
+
+.breakdown-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+.breakdown-table .sub-header th {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #666;
+  border-bottom: 1px solid #ddd;
+}
+
+.breakdown-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+.breakdown-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.breakdown-table td {
+  padding: 0.75rem;
+  text-align: right;
+}
+
+.breakdown-table .year-cell {
+  font-weight: 600;
+  text-align: center;
+  background-color: #f8f9fa;
+}
+
+.breakdown-table .positive {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.breakdown-table .negative {
+  color: #e74c3c;
+  font-weight: 600;
+}
+

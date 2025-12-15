@@ -26,22 +26,6 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
     }).format(value);
   };
 
-  const formatDifference = (value: number) => {
-    const sign = value >= 0 ? '+' : '';
-    return `${sign}${formatCurrency(value)}`;
-  };
-
-  const calculateDifference = (value1: number, value2: number) => {
-    return value1 - value2;
-  };
-
-  const getBetterWorse = (value1: number, value2: number, higherIsBetter: boolean = true) => {
-    const diff = value1 - value2;
-    if (diff === 0) return 'equal';
-    const isBetter = higherIsBetter ? diff > 0 : diff < 0;
-    return isBetter ? 'better' : 'worse';
-  };
-
   const comparisonRows = [
     {
       label: 'House Value',

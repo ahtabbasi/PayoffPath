@@ -37,128 +37,193 @@
   margin-left: auto;
 }
 
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.summary-card {
+.comparison-table-container {
+  overflow-x: auto;
   background: white;
-  padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
 }
 
-.summary-card h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: #333;
-  font-size: 1.2rem;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 0.5rem;
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
 }
 
-.pay-off-card h3 {
-  border-bottom-color: #e74c3c;
+.comparison-table thead {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
 }
 
-.invest-card h3 {
-  border-bottom-color: #27ae60;
-}
-
-.difference-card h3 {
-  border-bottom-color: #3498db;
-}
-
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.summary-item.total {
-  margin-top: 0.5rem;
-  padding-top: 1rem;
-  border-top: 2px solid #eee;
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-.summary-item .label {
-  color: #666;
-}
-
-.summary-item .value {
+.comparison-table th {
+  padding: 1rem;
+  text-align: left;
   font-weight: 600;
   color: #333;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.summary-item .value.positive {
-  color: #27ae60;
+.comparison-table th.metric-column {
+  width: 30%;
+  font-weight: 700;
 }
 
-.summary-item .value.negative {
-  color: #e74c3c;
-}
-
-.difference-value {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.comparison-table th.scenario-column {
+  width: 25%;
   text-align: center;
-  padding: 1rem 0;
-}
-
-.difference-value .label {
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.difference-value .value {
-  font-size: 2rem;
-  font-weight: bold;
-}
-
-.difference-value .recommendation {
-  font-size: 0.9rem;
-  color: #666;
-  font-style: italic;
-}
-
-.difference-card.better {
-  border: 2px solid #27ae60;
-}
-
-.difference-card.worse {
-  border: 2px solid #e74c3c;
-}
-
-.invest-pay-card h3 {
-  border-bottom-color: #3498db;
-}
-
-.summary-card {
   position: relative;
 }
 
-.summary-card.best-scenario {
-  border: 3px solid #f39c12;
-  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+.comparison-table th.scenario-column.best {
+  background-color: #fff3cd;
+  border: 2px solid #f39c12;
+  border-bottom: 2px solid #f39c12;
 }
 
-.best-badge {
-  position: absolute;
-  top: -10px;
-  right: 10px;
-  background: #f39c12;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
+/* Highlight entire column for best scenario - Pay Off Early (2nd column) */
+.comparison-table tbody tr.best-column-payoff td:nth-child(2) {
+  background-color: #fff3cd;
+  border-left: 2px solid #f39c12;
+  border-right: 2px solid #f39c12;
+}
+
+.comparison-table tbody tr.best-column-payoff.total-row td:nth-child(2) {
+  border-bottom: 2px solid #f39c12;
+}
+
+/* Highlight entire column for best scenario - Invest & Pay (3rd column) */
+.comparison-table tbody tr.best-column-invest td:nth-child(3) {
+  background-color: #fff3cd;
+  border-left: 2px solid #f39c12;
+  border-right: 2px solid #f39c12;
+}
+
+.comparison-table tbody tr.best-column-invest.total-row td:nth-child(3) {
+  border-bottom: 2px solid #f39c12;
+}
+
+.comparison-table th.difference-column {
+  width: 20%;
+  text-align: center;
+}
+
+.scenario-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scenario-header .best-indicator {
   font-size: 0.75rem;
+  color: #f39c12;
+  font-weight: 700;
+  background-color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid #f39c12;
+}
+
+.comparison-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.comparison-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.comparison-table tbody tr.total-row {
+  border-top: 2px solid #dee2e6;
+  background-color: #f8f9fa;
+}
+
+.comparison-table tbody tr.total-row:hover {
+  background-color: #e9ecef;
+}
+
+.comparison-table td {
+  padding: 0.875rem 1rem;
+  color: #333;
+}
+
+.comparison-table td.metric-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.comparison-table td.total-label {
+}
+
+.comparison-table td.scenario-value {
+  text-align: center;
+  font-weight: 600;
+}
+
+.comparison-table td.total-value {
+  color: #333;
+}
+
+.comparison-table td.difference-value {
+  text-align: center;
+  font-weight: 600;
+  position: relative;
+}
+
+.comparison-table td.difference-value.better {
+  color: #27ae60;
+}
+
+.comparison-table td.difference-value.worse {
+  color: #e74c3c;
+}
+
+.comparison-table td.difference-value.equal {
+  color: #6c757d;
+}
+
+.comparison-table td.total-diff {
+  padding: 1rem;
+}
+
+.diff-amount {
+  display: inline-block;
+}
+
+.diff-indicator {
+  display: inline-block;
+  font-size: 1.2rem;
   font-weight: bold;
-  text-transform: uppercase;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.diff-indicator.better {
+  color: #27ae60;
+}
+
+.diff-indicator.worse {
+  color: #e74c3c;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .comparison-table-container {
+    padding: 0.5rem;
+  }
+  
+  .comparison-table {
+    font-size: 0.9rem;
+  }
+  
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .comparison-table th {
+    font-size: 0.85rem;
+  }
 }
 

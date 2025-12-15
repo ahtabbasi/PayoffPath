@@ -32,6 +32,7 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
       totalContributions: number;
       principal: number;
       taxRebate: number;
+      totalInterestPaid: number;
     }> = [];
 
     for (let year = 1; year <= yearsLeft; year++) {
@@ -46,6 +47,7 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
           totalContributions: snapshot.totalContributions,
           principal: snapshot.principal,
           taxRebate: snapshot.taxRebate,
+          totalInterestPaid: snapshot.interestPaid,
         });
       }
     }
@@ -65,16 +67,18 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
               <th>Year</th>
               <th>House Value</th>
               <th>Current Principal</th>
-              <th>Investment Value</th>
+              <th>Total Interest Paid</th>
               <th>Total Tax Rebate</th>
+              <th>Investment Value</th>
               <th>Total Contributions</th>
               <th>Net Worth</th>
             </tr>
           </thead>
           <tbody>
             {investAndPayYearly.map((data) => {
-              const principalValue = -data.principal;
-              const contributionsValue = -data.totalContributions;
+              const principalValue = data.principal !== 0 ? -data.principal : 0;
+              const contributionsValue = data.totalContributions !== 0 ? -data.totalContributions : 0;
+              const interestPaidValue = data.totalInterestPaid !== 0 ? -data.totalInterestPaid : 0;
               return (
                 <tr key={data.year}>
                   <td className="year-cell">{data.year}</td>
@@ -82,12 +86,19 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
                   <td className={data.principal !== 0 ? 'negative' : ''}>
                     {formatCurrency(principalValue)}
                   </td>
-                  <td className="positive">{formatCurrency(data.investmentValue)}</td>
-                  <td className="positive">{formatCurrency(data.taxRebate)}</td>
+                  <td className={data.totalInterestPaid !== 0 ? 'negative' : ''}>
+                    {formatCurrency(interestPaidValue)}
+                  </td>
+                  <td className={data.taxRebate > 0 ? 'positive' : ''}>
+                    {formatCurrency(data.taxRebate)}
+                  </td>
+                  <td className={data.investmentValue > 0 ? 'positive' : ''}>
+                    {formatCurrency(data.investmentValue)}
+                  </td>
                   <td className={data.totalContributions !== 0 ? 'negative' : ''}>
                     {formatCurrency(contributionsValue)}
                   </td>
-                  <td className={data.netWorth >= 0 ? 'positive' : 'negative'}>
+                  <td className={data.netWorth > 0 ? 'positive' : data.netWorth < 0 ? 'negative' : ''}>
                     {formatCurrency(data.netWorth)}
                   </td>
                 </tr>

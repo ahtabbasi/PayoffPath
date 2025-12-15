@@ -29,7 +29,7 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
       netWorth: number;
       totalPaid: number;
       investmentValue: number;
-      totalContributions: number;
+      extraContributions: number;
       principal: number;
       taxRebate: number;
       totalInterestPaid: number;
@@ -44,7 +44,7 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
           netWorth: snapshot.netWorth,
           totalPaid: snapshot.totalPaid,
           investmentValue: snapshot.investmentValue,
-          totalContributions: snapshot.totalContributions,
+          extraContributions: snapshot.extraContributions,
           principal: snapshot.principal,
           taxRebate: snapshot.taxRebate,
           totalInterestPaid: snapshot.interestPaid,
@@ -70,14 +70,14 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
               <th>Total Interest Paid</th>
               <th>Total Tax Rebate</th>
               <th>Investment Value</th>
-              <th>Total Contributions</th>
+              <th>Extra Contributions</th>
               <th>Net Worth</th>
             </tr>
           </thead>
           <tbody>
             {investAndPayYearly.map((data) => {
               const principalValue = data.principal !== 0 ? -data.principal : 0;
-              const contributionsValue = data.totalContributions !== 0 ? -data.totalContributions : 0;
+              const contributionsValue = data.extraContributions !== 0 ? -data.extraContributions : 0;
               const interestPaidValue = data.totalInterestPaid !== 0 ? -data.totalInterestPaid : 0;
               return (
                 <tr key={data.year}>
@@ -95,7 +95,7 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
                   <td className={data.investmentValue > 0 ? 'positive' : ''}>
                     {formatCurrency(data.investmentValue)}
                   </td>
-                  <td className={data.totalContributions !== 0 ? 'negative' : ''}>
+                  <td className={data.extraContributions !== 0 ? 'negative' : ''}>
                     {formatCurrency(contributionsValue)}
                   </td>
                   <td className={data.netWorth > 0 ? 'positive' : data.netWorth < 0 ? 'negative' : ''}>

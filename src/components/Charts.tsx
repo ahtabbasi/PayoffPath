@@ -125,7 +125,7 @@ export const Charts: React.FC<ChartsProps> = ({ onlyMonthlyPayments, payOffEarly
 
   // Prepare data for bar chart (totals comparison)
   const barChartData = {
-    labels: ['Total Payments', 'Total Interest', 'Tax Rebate', 'Final Investment', 'Contributions', 'Final Net Worth'],
+    labels: ['Total Payments', 'Total Interest', 'Tax Rebate', 'Final Investment', 'Extra Contributions', 'Final Net Worth'],
     datasets: [
       {
         label: 'Only Monthly Payments',
@@ -134,7 +134,7 @@ export const Charts: React.FC<ChartsProps> = ({ onlyMonthlyPayments, payOffEarly
           onlyMonthlyPayments.totalInterestPaid,
           onlyMonthlyPayments.totalTaxRebate,
           onlyMonthlyPayments.finalInvestmentValue,
-          onlyMonthlyPayments.totalContributions,
+          onlyMonthlyPayments.extraContributions,
           onlyMonthlyPayments.finalNetWorth,
         ],
         backgroundColor: 'rgba(46, 204, 113, 0.7)',
@@ -146,7 +146,7 @@ export const Charts: React.FC<ChartsProps> = ({ onlyMonthlyPayments, payOffEarly
           payOffEarly.totalInterestPaid,
           payOffEarly.totalTaxRebate,
           0,
-          payOffEarly.totalContributions,
+          payOffEarly.extraContributions,
           payOffEarly.finalNetWorth,
         ],
         backgroundColor: 'rgba(231, 76, 60, 0.7)',
@@ -158,7 +158,7 @@ export const Charts: React.FC<ChartsProps> = ({ onlyMonthlyPayments, payOffEarly
           investAndPay.totalInterestPaid,
           investAndPay.totalTaxRebate,
           investAndPay.finalInvestmentValue,
-          investAndPay.totalContributions,
+          investAndPay.extraContributions,
           investAndPay.finalNetWorth,
         ],
         backgroundColor: 'rgba(52, 152, 219, 0.7)',

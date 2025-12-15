@@ -15,7 +15,7 @@ export interface MonthlySnapshot {
   taxRebate: number;
   investmentValue: number;
   totalPaid: number;
-  totalContributions: number;
+  extraContributions: number;
   netWorth: number;
 }
 
@@ -24,7 +24,7 @@ export interface ScenarioResult {
   totalInterestPaid: number;
   totalTaxRebate: number;
   totalPayments: number;
-  totalContributions: number;
+  extraContributions: number;
   finalInvestmentValue: number;
   finalNetWorth: number;
 }
@@ -102,11 +102,16 @@ export function calculatePayOffEarlyScenario(inputs: MortgageInputs): ScenarioRe
   let totalInterestPaid = 0;
   let totalTaxRebate = 0;
   let totalPayments = 0;
+  let extraContributions = 0;
   
   // Apply lump sum payment at the start
   const lumpSumApplied = Math.min(inputs.totalMoneyInHand, currentPrincipal);
   currentPrincipal -= lumpSumApplied;
   totalPayments += lumpSumApplied;
+  // Do NOT count lump sum as extra contributions - it's initial money
+  
+  // Calculate unused lump sum (if lump sum > remaining principal)
+  const unusedLumpSum = inputs.totalMoneyInHand - lumpSumApplied;
   
   // Recalculate monthly payment after lump sum
   const remainingMonths = totalMonths;
@@ -126,15 +131,16 @@ export function calculatePayOffEarlyScenario(inputs: MortgageInputs): ScenarioRe
   for (let month = 1; month <= totalMonths; month++) {
     if (currentPrincipal <= 0) {
       // Mortgage is paid off
+      // Net worth = House value + tax rebates - extra contributions + unused lump sum
       snapshots.push({
         month,
         principal: 0,
-        interestPaid: 0,
-        taxRebate: 0,
+        interestPaid: totalInterestPaid,
+        taxRebate: totalTaxRebate,
         investmentValue: 0,
         totalPaid: totalPayments,
-        totalContributions: 0,
-        netWorth: inputs.houseValue + totalTaxRebate, // House value + tax rebates
+        extraContributions,
+        netWorth: inputs.houseValue - currentPrincipal + totalTaxRebate - extraContributions + unusedLumpSum,
       });
       continue;
     }
@@ -143,6 +149,8 @@ export function calculatePayOffEarlyScenario(inputs: MortgageInputs): ScenarioRe
     const principalPayment = Math.min(monthlyPayment - interestForMonth, currentPrincipal);
     const actualPayment = interestForMonth + principalPayment;
     
+    // Monthly payments come from extra contributions (not lump sum)
+    extraContributions += actualPayment;
     currentPrincipal -= principalPayment;
     totalInterestPaid += interestForMonth;
     totalPayments += actualPayment;
@@ -150,7 +158,7 @@ export function calculatePayOffEarlyScenario(inputs: MortgageInputs): ScenarioRe
     const taxRebate = interestForMonth * (inputs.taxRebatePercentage / 100);
     totalTaxRebate += taxRebate;
     
-    // Net worth = House value - remaining principal + investment + tax rebates
+    // Net worth = House value - remaining principal + tax rebates - extra contributions + unused lump sum
     snapshots.push({
       month,
       principal: currentPrincipal,
@@ -158,8 +166,8 @@ export function calculatePayOffEarlyScenario(inputs: MortgageInputs): ScenarioRe
       taxRebate: totalTaxRebate,
       investmentValue: 0, // No investment in this scenario
       totalPaid: totalPayments,
-      totalContributions: 0,
-      netWorth: inputs.houseValue - currentPrincipal + totalTaxRebate,
+      extraContributions,
+      netWorth: inputs.houseValue - currentPrincipal + totalTaxRebate - extraContributions + unusedLumpSum,
     });
   }
   
@@ -168,14 +176,14 @@ export function calculatePayOffEarlyScenario(inputs: MortgageInputs): ScenarioRe
     totalInterestPaid,
     totalTaxRebate,
     totalPayments,
-    totalContributions: 0, // No contributions in pay-off-early scenario
+    extraContributions,
     finalInvestmentValue: 0,
-    finalNetWorth: inputs.houseValue - currentPrincipal + totalTaxRebate,
+    finalNetWorth: inputs.houseValue - currentPrincipal + totalTaxRebate - extraContributions + unusedLumpSum,
   };
 }
 
 /**
- * Scenario A: Only monthly payments - pay regular monthly payments from contributions
+ * Scenario A: Only monthly payments - pay regular monthly payments from lump sum first, then extra contributions
  */
 export function calculateOnlyMonthlyPaymentsScenario(inputs: MortgageInputs): ScenarioResult {
   const monthlyIntRate = monthlyRate(inputs.interestRate);
@@ -193,12 +201,14 @@ export function calculateOnlyMonthlyPaymentsScenario(inputs: MortgageInputs): Sc
   let totalInterestPaid = 0;
   let totalTaxRebate = 0;
   let totalPayments = 0;
-  let totalContributions = 0;
+  let extraContributions = 0;
+  let lumpSumRemaining = inputs.totalMoneyInHand; // Track unused lump sum
   
   // Simulate month by month
   for (let month = 1; month <= totalMonths; month++) {
     if (currentPrincipal <= 0) {
       // Mortgage is paid off
+      const unusedLumpSum = lumpSumRemaining;
       snapshots.push({
         month,
         principal: 0,
@@ -206,8 +216,8 @@ export function calculateOnlyMonthlyPaymentsScenario(inputs: MortgageInputs): Sc
         taxRebate: totalTaxRebate,
         investmentValue: 0,
         totalPaid: totalPayments,
-        totalContributions,
-        netWorth: inputs.houseValue + totalTaxRebate - totalContributions,
+        extraContributions,
+        netWorth: inputs.houseValue - currentPrincipal + totalTaxRebate - extraContributions + unusedLumpSum,
       });
       continue;
     }
@@ -216,17 +226,22 @@ export function calculateOnlyMonthlyPaymentsScenario(inputs: MortgageInputs): Sc
     const principalPayment = Math.min(monthlyPayment - interestForMonth, currentPrincipal);
     const actualPayment = interestForMonth + principalPayment;
     
-    // Payment comes from contributions
-    totalContributions += actualPayment;
-    totalPayments += actualPayment;
+    // Use lump sum first, then extra contributions
+    const paymentFromLumpSum = Math.min(actualPayment, lumpSumRemaining);
+    lumpSumRemaining -= paymentFromLumpSum;
     
+    const paymentFromExtraContributions = actualPayment - paymentFromLumpSum;
+    extraContributions += paymentFromExtraContributions;
+    
+    totalPayments += actualPayment;
     currentPrincipal -= principalPayment;
     totalInterestPaid += interestForMonth;
     
     const taxRebate = interestForMonth * (inputs.taxRebatePercentage / 100);
     totalTaxRebate += taxRebate;
     
-    // Net worth = House value - remaining principal + tax rebates - contributions
+    const unusedLumpSum = lumpSumRemaining;
+    // Net worth = House value - remaining principal + tax rebates - extra contributions + unused lump sum
     snapshots.push({
       month,
       principal: currentPrincipal,
@@ -234,19 +249,20 @@ export function calculateOnlyMonthlyPaymentsScenario(inputs: MortgageInputs): Sc
       taxRebate: totalTaxRebate,
       investmentValue: 0, // No investment in this scenario
       totalPaid: totalPayments,
-      totalContributions,
-      netWorth: inputs.houseValue - currentPrincipal + totalTaxRebate - totalContributions,
+      extraContributions,
+      netWorth: inputs.houseValue - currentPrincipal + totalTaxRebate - extraContributions + unusedLumpSum,
     });
   }
   
+  const unusedLumpSum = lumpSumRemaining;
   return {
     monthlySnapshots: snapshots,
     totalInterestPaid,
     totalTaxRebate,
     totalPayments,
-    totalContributions,
+    extraContributions,
     finalInvestmentValue: 0,
-    finalNetWorth: inputs.houseValue - currentPrincipal + totalTaxRebate - totalContributions,
+    finalNetWorth: inputs.houseValue - currentPrincipal + totalTaxRebate - extraContributions + unusedLumpSum,
   };
 }
 
@@ -267,11 +283,12 @@ export function calculateInvestAndPayFromInvestmentScenario(inputs: MortgageInpu
   );
   
   let currentPrincipal = inputs.remainingPrincipal;
-  let investmentValue = inputs.totalMoneyInHand;
+  let investmentValue = inputs.totalMoneyInHand; // All lump sum is invested
   let totalInterestPaid = 0;
   let totalTaxRebate = 0;
   let totalPayments = 0;
-  let totalContributions = 0;
+  let extraContributions = 0;
+  const unusedLumpSum = 0; // All lump sum is invested, so none unused
   
   // Simulate month by month
   for (let month = 1; month <= totalMonths; month++) {
@@ -283,7 +300,7 @@ export function calculateInvestAndPayFromInvestmentScenario(inputs: MortgageInpu
         1
       );
       
-      // Net worth = House value + remaining investment + tax rebates - contributions
+      // Net worth = House value + remaining investment + tax rebates - extra contributions + unused lump sum
       snapshots.push({
         month,
         principal: 0,
@@ -291,8 +308,8 @@ export function calculateInvestAndPayFromInvestmentScenario(inputs: MortgageInpu
         taxRebate: totalTaxRebate,
         investmentValue,
         totalPaid: totalPayments,
-        totalContributions,
-        netWorth: inputs.houseValue + investmentValue + totalTaxRebate - totalContributions,
+        extraContributions,
+        netWorth: inputs.houseValue - currentPrincipal + investmentValue + totalTaxRebate - extraContributions + unusedLumpSum,
       });
       continue;
     }
@@ -313,12 +330,12 @@ export function calculateInvestAndPayFromInvestmentScenario(inputs: MortgageInpu
     const paymentFromInvestment = Math.min(actualPayment, investmentValue);
     investmentValue = Math.max(0, investmentValue - paymentFromInvestment);
     
-    // If investment is insufficient, make up the difference from contributions
+    // If investment is insufficient, make up the difference from extra contributions
     const remainingPaymentNeeded = actualPayment - paymentFromInvestment;
     let paymentFromContributions = 0;
     if (remainingPaymentNeeded > 0) {
       paymentFromContributions = remainingPaymentNeeded;
-      totalContributions += paymentFromContributions;
+      extraContributions += paymentFromContributions;
     }
     
     const totalPaymentThisMonth = paymentFromInvestment + paymentFromContributions;
@@ -341,12 +358,8 @@ export function calculateInvestAndPayFromInvestmentScenario(inputs: MortgageInpu
     const taxRebate = interestPaidThisMonth * (inputs.taxRebatePercentage / 100);
     totalTaxRebate += taxRebate;
     
-    // Net worth = House value - remaining principal + remaining investment + tax rebates - contributions
-    // When contributions are made (investment runs out), net worth decreases because:
-    // - Contributions increase (reduces net worth)
-    // - Principal decreases (increases net worth)
-    // Net effect: principalReduction - contributionAmount = -interestPaid (plus tax rebate)
-    const calculatedNetWorth = inputs.houseValue - currentPrincipal + investmentValue + totalTaxRebate - totalContributions;
+    // Net worth = House value - remaining principal + remaining investment + tax rebates - extra contributions + unused lump sum
+    const calculatedNetWorth = inputs.houseValue - currentPrincipal + investmentValue + totalTaxRebate - extraContributions + unusedLumpSum;
     snapshots.push({
       month,
       principal: currentPrincipal,
@@ -354,7 +367,7 @@ export function calculateInvestAndPayFromInvestmentScenario(inputs: MortgageInpu
       taxRebate: totalTaxRebate,
       investmentValue,
       totalPaid: totalPayments,
-      totalContributions,
+      extraContributions,
       netWorth: calculatedNetWorth,
     });
   }
@@ -364,9 +377,9 @@ export function calculateInvestAndPayFromInvestmentScenario(inputs: MortgageInpu
     totalInterestPaid,
     totalTaxRebate,
     totalPayments,
-    totalContributions,
+    extraContributions,
     finalInvestmentValue: investmentValue,
-    finalNetWorth: inputs.houseValue - currentPrincipal + investmentValue + totalTaxRebate - totalContributions,
+    finalNetWorth: inputs.houseValue - currentPrincipal + investmentValue + totalTaxRebate - extraContributions + unusedLumpSum,
   };
 }
 

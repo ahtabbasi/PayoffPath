@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { MortgageInputs, calculateComparison } from './utils/mortgageCalculations';
 import { InputForm } from './components/InputForm';
 import { ComparisonSummary } from './components/ComparisonSummary';
@@ -16,8 +16,30 @@ const defaultInputs: MortgageInputs = {
   houseValue: 400000,
 };
 
+const STORAGE_KEY = 'mortgageCalculatorInputs';
+
 function App() {
-  const [inputs, setInputs] = useState<MortgageInputs>(defaultInputs);
+  // Load inputs from localStorage on mount, fallback to defaults
+  const [inputs, setInputs] = useState<MortgageInputs>(() => {
+    try {
+      const savedInputs = localStorage.getItem(STORAGE_KEY);
+      if (savedInputs) {
+        return JSON.parse(savedInputs);
+      }
+    } catch (error) {
+      console.error('Error loading saved inputs:', error);
+    }
+    return defaultInputs;
+  });
+
+  // Save inputs to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(inputs));
+    } catch (error) {
+      console.error('Error saving inputs to localStorage:', error);
+    }
+  }, [inputs]);
 
   const comparison = useMemo(() => {
     return calculateComparison(inputs);

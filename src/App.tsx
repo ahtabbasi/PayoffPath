@@ -10,7 +10,7 @@ const defaultInputs: MortgageInputs = {
   remainingPrincipal: 300000,
   yearsLeft: 20,
   interestRate: 4.5,
-  taxRebatePercentage: 30,
+  taxRebatePercentage: 37,
   investmentReturnRate: 7,
   totalMoneyInHand: 50000,
   houseValue: 400000,

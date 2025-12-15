@@ -63,20 +63,6 @@ export const InputForm: React.FC<InputFormProps> = ({ inputs, onChange }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="monthlyPayment">
-            Current Monthly Payment ($)
-          </label>
-          <input
-            id="monthlyPayment"
-            type="number"
-            value={inputs.monthlyPayment}
-            onChange={(e) => handleChange('monthlyPayment', parseFloat(e.target.value) || 0)}
-            min="0"
-            step="100"
-          />
-        </div>
-
-        <div className="form-group">
           <label htmlFor="taxRebatePercentage">
             Tax Rebate on Interest (%)
           </label>

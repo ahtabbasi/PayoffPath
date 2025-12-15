@@ -51,6 +51,12 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
           {formatCurrency(result.finalInvestmentValue)}
         </span>
       </div>
+      <div className="summary-item">
+        <span className="label">Total Contributions:</span>
+        <span className={`value ${result.totalContributions > 0 ? 'negative' : ''}`}>
+          {formatCurrency(result.totalContributions)}
+        </span>
+      </div>
       <div className="summary-item total">
         <span className="label">Final Net Worth:</span>
         <span className={`value ${result.finalNetWorth >= 0 ? 'positive' : 'negative'}`}>

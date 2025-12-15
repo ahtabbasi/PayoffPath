@@ -10,7 +10,6 @@ const defaultInputs: MortgageInputs = {
   remainingPrincipal: 300000,
   yearsLeft: 20,
   interestRate: 4.5,
-  monthlyPayment: 2000,
   taxRebatePercentage: 30,
   investmentReturnRate: 7,
   totalMoneyInHand: 50000,
@@ -50,9 +49,9 @@ function App() {
         />
 
         <YearlyBreakdown
-          payOffEarly={comparison.payOffEarly}
           investAndPay={comparison.investAndPay}
           yearsLeft={inputs.yearsLeft}
+          houseValue={inputs.houseValue}
         />
       </main>
     </div>

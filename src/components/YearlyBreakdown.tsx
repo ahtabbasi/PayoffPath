@@ -3,15 +3,15 @@ import { ScenarioResult } from '../utils/mortgageCalculations';
 import './YearlyBreakdown.css';
 
 interface YearlyBreakdownProps {
-  payOffEarly: ScenarioResult;
   investAndPay: ScenarioResult;
   yearsLeft: number;
+  houseValue: number;
 }
 
 export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
-  payOffEarly,
   investAndPay,
   yearsLeft,
+  houseValue,
 }) => {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -29,6 +29,9 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
       netWorth: number;
       totalPaid: number;
       investmentValue: number;
+      totalContributions: number;
+      principal: number;
+      taxRebate: number;
     }> = [];
 
     for (let year = 1; year <= yearsLeft; year++) {
@@ -40,6 +43,9 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
           netWorth: snapshot.netWorth,
           totalPaid: snapshot.totalPaid,
           investmentValue: snapshot.investmentValue,
+          totalContributions: snapshot.totalContributions,
+          principal: snapshot.principal,
+          taxRebate: snapshot.taxRebate,
         });
       }
     }
@@ -47,7 +53,6 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
     return yearlyData;
   };
 
-  const payOffEarlyYearly = getYearlyData(payOffEarly.monthlySnapshots);
   const investAndPayYearly = getYearlyData(investAndPay.monthlySnapshots);
 
   return (
@@ -58,35 +63,33 @@ export const YearlyBreakdown: React.FC<YearlyBreakdownProps> = ({
           <thead>
             <tr>
               <th>Year</th>
-              <th colSpan={3}>Pay Off Early</th>
-              <th colSpan={3}>Invest & Pay from Investment</th>
-            </tr>
-            <tr className="sub-header">
-              <th></th>
+              <th>House Value</th>
+              <th>Current Principal</th>
+              <th>Investment Value</th>
+              <th>Total Tax Rebate</th>
+              <th>Total Contributions</th>
               <th>Net Worth</th>
-              <th>Total Paid</th>
-              <th>Investment</th>
-              <th>Net Worth</th>
-              <th>Total Paid</th>
-              <th>Investment</th>
             </tr>
           </thead>
           <tbody>
-            {payOffEarlyYearly.map((payOffData, index) => {
-              const investAndPayData = investAndPayYearly[index];
+            {investAndPayYearly.map((data) => {
+              const principalValue = -data.principal;
+              const contributionsValue = -data.totalContributions;
               return (
-                <tr key={payOffData.year}>
-                  <td className="year-cell">{payOffData.year}</td>
-                  <td className={payOffData.netWorth >= 0 ? 'positive' : 'negative'}>
-                    {formatCurrency(payOffData.netWorth)}
+                <tr key={data.year}>
+                  <td className="year-cell">{data.year}</td>
+                  <td>{formatCurrency(houseValue)}</td>
+                  <td className={data.principal !== 0 ? 'negative' : ''}>
+                    {formatCurrency(principalValue)}
                   </td>
-                  <td>{formatCurrency(payOffData.totalPaid)}</td>
-                  <td>{formatCurrency(payOffData.investmentValue)}</td>
-                  <td className={investAndPayData.netWorth >= 0 ? 'positive' : 'negative'}>
-                    {formatCurrency(investAndPayData.netWorth)}
+                  <td className="positive">{formatCurrency(data.investmentValue)}</td>
+                  <td className="positive">{formatCurrency(data.taxRebate)}</td>
+                  <td className={data.totalContributions !== 0 ? 'negative' : ''}>
+                    {formatCurrency(contributionsValue)}
                   </td>
-                  <td>{formatCurrency(investAndPayData.totalPaid)}</td>
-                  <td className="positive">{formatCurrency(investAndPayData.investmentValue)}</td>
+                  <td className={data.netWorth >= 0 ? 'positive' : 'negative'}>
+                    {formatCurrency(data.netWorth)}
+                  </td>
                 </tr>
               );
             })}

@@ -91,7 +91,7 @@ function calculateInvestmentValue(
 }
 
 /**
- * Scenario A: Pay off mortgage early with lump sum
+ * Scenario B: Pay off mortgage early with lump sum
  */
 export function calculatePayOffEarlyScenario(inputs: MortgageInputs): ScenarioResult {
   const monthlyIntRate = monthlyRate(inputs.interestRate);
@@ -175,7 +175,83 @@ export function calculatePayOffEarlyScenario(inputs: MortgageInputs): ScenarioRe
 }
 
 /**
- * Scenario B: Invest lump sum and pay mortgage from investment
+ * Scenario A: Only monthly payments - pay regular monthly payments from contributions
+ */
+export function calculateOnlyMonthlyPaymentsScenario(inputs: MortgageInputs): ScenarioResult {
+  const monthlyIntRate = monthlyRate(inputs.interestRate);
+  const totalMonths = inputs.yearsLeft * 12;
+  const snapshots: MonthlySnapshot[] = [];
+  
+  // Calculate the monthly payment from principal, interest rate, and term
+  const monthlyPayment = calculateMonthlyPayment(
+    inputs.remainingPrincipal,
+    inputs.interestRate,
+    inputs.yearsLeft
+  );
+  
+  let currentPrincipal = inputs.remainingPrincipal;
+  let totalInterestPaid = 0;
+  let totalTaxRebate = 0;
+  let totalPayments = 0;
+  let totalContributions = 0;
+  
+  // Simulate month by month
+  for (let month = 1; month <= totalMonths; month++) {
+    if (currentPrincipal <= 0) {
+      // Mortgage is paid off
+      snapshots.push({
+        month,
+        principal: 0,
+        interestPaid: totalInterestPaid,
+        taxRebate: totalTaxRebate,
+        investmentValue: 0,
+        totalPaid: totalPayments,
+        totalContributions,
+        netWorth: inputs.houseValue + totalTaxRebate - totalContributions,
+      });
+      continue;
+    }
+    
+    const interestForMonth = currentPrincipal * monthlyIntRate;
+    const principalPayment = Math.min(monthlyPayment - interestForMonth, currentPrincipal);
+    const actualPayment = interestForMonth + principalPayment;
+    
+    // Payment comes from contributions
+    totalContributions += actualPayment;
+    totalPayments += actualPayment;
+    
+    currentPrincipal -= principalPayment;
+    totalInterestPaid += interestForMonth;
+    
+    const taxRebate = interestForMonth * (inputs.taxRebatePercentage / 100);
+    totalTaxRebate += taxRebate;
+    
+    // Net worth = House value - remaining principal + tax rebates - contributions
+    snapshots.push({
+      month,
+      principal: currentPrincipal,
+      interestPaid: totalInterestPaid,
+      taxRebate: totalTaxRebate,
+      investmentValue: 0, // No investment in this scenario
+      totalPaid: totalPayments,
+      totalContributions,
+      netWorth: inputs.houseValue - currentPrincipal + totalTaxRebate - totalContributions,
+    });
+  }
+  
+  return {
+    monthlySnapshots: snapshots,
+    totalInterestPaid,
+    totalTaxRebate,
+    totalPayments,
+    totalContributions,
+    finalInvestmentValue: 0,
+    finalNetWorth: inputs.houseValue - currentPrincipal + totalTaxRebate - totalContributions,
+  };
+}
+
+/**
+ * Scenario C: Invest lump sum and pay mortgage from investment
  */
 export function calculateInvestAndPayFromInvestmentScenario(inputs: MortgageInputs): ScenarioResult {
   const monthlyIntRate = monthlyRate(inputs.interestRate);
@@ -298,11 +374,13 @@ export function calculateInvestAndPayFromInvestmentScenario(inputs: MortgageInpu
  * Calculate comparison between scenarios
  */
 export function calculateComparison(inputs: MortgageInputs) {
+  const onlyMonthlyPayments = calculateOnlyMonthlyPaymentsScenario(inputs);
   const payOffEarly = calculatePayOffEarlyScenario(inputs);
   const investAndPay = calculateInvestAndPayFromInvestmentScenario(inputs);
   
   // Find the best scenario
   const scenarios = [
+    { name: 'onlyMonthlyPayments', netWorth: onlyMonthlyPayments.finalNetWorth },
     { name: 'payOffEarly', netWorth: payOffEarly.finalNetWorth },
     { name: 'investAndPay', netWorth: investAndPay.finalNetWorth },
   ];
@@ -312,6 +390,7 @@ export function calculateComparison(inputs: MortgageInputs) {
   );
   
   return {
+    onlyMonthlyPayments,
     payOffEarly,
     investAndPay,
     bestScenario: bestScenario.name,

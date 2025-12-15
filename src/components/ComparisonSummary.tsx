@@ -3,6 +3,7 @@ import { ScenarioResult } from '../utils/mortgageCalculations';
 import './ComparisonSummary.css';
 
 interface ComparisonSummaryProps {
+  onlyMonthlyPayments: ScenarioResult;
   payOffEarly: ScenarioResult;
   investAndPay: ScenarioResult;
   bestScenario: string;
@@ -10,6 +11,7 @@ interface ComparisonSummaryProps {
 }
 
 export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
+  onlyMonthlyPayments,
   payOffEarly,
   investAndPay,
   bestScenario,
@@ -29,12 +31,12 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
     return `${sign}${formatCurrency(value)}`;
   };
 
-  const calculateDifference = (invest: number, payOff: number) => {
-    return invest - payOff;
+  const calculateDifference = (value1: number, value2: number) => {
+    return value1 - value2;
   };
 
-  const getBetterWorse = (invest: number, payOff: number, higherIsBetter: boolean = true) => {
-    const diff = invest - payOff;
+  const getBetterWorse = (value1: number, value2: number, higherIsBetter: boolean = true) => {
+    const diff = value1 - value2;
     if (diff === 0) return 'equal';
     const isBetter = higherIsBetter ? diff > 0 : diff < 0;
     return isBetter ? 'better' : 'worse';
@@ -43,6 +45,7 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
   const comparisonRows = [
     {
       label: 'House Value',
+      onlyMonthly: houseValue,
       payOff: houseValue,
       invest: houseValue,
       higherIsBetter: true,
@@ -50,6 +53,7 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
     },
     {
       label: 'Total Interest Paid',
+      onlyMonthly: onlyMonthlyPayments.totalInterestPaid,
       payOff: payOffEarly.totalInterestPaid,
       invest: investAndPay.totalInterestPaid,
       higherIsBetter: false,
@@ -57,6 +61,7 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
     },
     {
       label: 'Total Tax Rebate',
+      onlyMonthly: onlyMonthlyPayments.totalTaxRebate,
       payOff: payOffEarly.totalTaxRebate,
       invest: investAndPay.totalTaxRebate,
       higherIsBetter: true,
@@ -64,6 +69,7 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
     },
     {
       label: 'Final Investment Value',
+      onlyMonthly: onlyMonthlyPayments.finalInvestmentValue,
       payOff: payOffEarly.finalInvestmentValue,
       invest: investAndPay.finalInvestmentValue,
       higherIsBetter: true,
@@ -71,14 +77,13 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
     },
     {
       label: 'Total Contributions',
+      onlyMonthly: onlyMonthlyPayments.totalContributions,
       payOff: payOffEarly.totalContributions,
       invest: investAndPay.totalContributions,
       higherIsBetter: false,
       category: 'costs',
     },
   ];
-
-  const netWorthDiff = calculateDifference(investAndPay.finalNetWorth, payOffEarly.finalNetWorth);
 
   return (
     <div className="comparison-summary">
@@ -89,6 +94,12 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
           <thead>
             <tr>
               <th className="metric-column">Metric</th>
+              <th className={`scenario-column ${bestScenario === 'onlyMonthlyPayments' ? 'best' : ''}`}>
+                <div className="scenario-header">
+                  <span>Only Monthly Payments</span>
+                  {bestScenario === 'onlyMonthlyPayments' && <span className="best-indicator">✓ Best</span>}
+                </div>
+              </th>
               <th className={`scenario-column ${bestScenario === 'payOffEarly' ? 'best' : ''}`}>
                 <div className="scenario-header">
                   <span>Pay Off Early</span>
@@ -101,51 +112,31 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
                   {bestScenario === 'investAndPay' && <span className="best-indicator">✓ Best</span>}
                 </div>
               </th>
-              <th className="difference-column">Difference</th>
             </tr>
           </thead>
           <tbody>
             {comparisonRows.map((row, index) => {
-              const diff = calculateDifference(row.invest, row.payOff);
-              const comparison = getBetterWorse(row.invest, row.payOff, row.higherIsBetter);
-              
               return (
-                <tr key={index} className={`comparison-row ${row.category} ${bestScenario === 'payOffEarly' ? 'best-column-payoff' : ''} ${bestScenario === 'investAndPay' ? 'best-column-invest' : ''}`}>
+                <tr key={index} className={`comparison-row ${row.category} ${bestScenario === 'onlyMonthlyPayments' ? 'best-column-monthly' : ''} ${bestScenario === 'payOffEarly' ? 'best-column-payoff' : ''} ${bestScenario === 'investAndPay' ? 'best-column-invest' : ''}`}>
                   <td className="metric-label">{row.label}</td>
+                  <td className="scenario-value">{formatCurrency(row.onlyMonthly)}</td>
                   <td className="scenario-value">{formatCurrency(row.payOff)}</td>
                   <td className="scenario-value">{formatCurrency(row.invest)}</td>
-                  <td className={`difference-value ${comparison}`}>
-                    <span className="diff-amount">
-                      {formatDifference(diff)}
-                      {comparison !== 'equal' && (
-                        <span className={`diff-indicator ${comparison}`}>
-                          {' '}{comparison === 'better' ? '↑' : '↓'}
-                        </span>
-                      )}
-                    </span>
-                  </td>
                 </tr>
               );
             })}
-            <tr className={`comparison-row total-row ${bestScenario === 'payOffEarly' ? 'best-column-payoff' : ''} ${bestScenario === 'investAndPay' ? 'best-column-invest' : ''}`}>
+            <tr className={`comparison-row total-row ${bestScenario === 'onlyMonthlyPayments' ? 'best-column-monthly' : ''} ${bestScenario === 'payOffEarly' ? 'best-column-payoff' : ''} ${bestScenario === 'investAndPay' ? 'best-column-invest' : ''}`}>
               <td className="metric-label total-label">
                 <strong>Final Net Worth</strong>
+              </td>
+              <td className="scenario-value total-value">
+                <strong>{formatCurrency(onlyMonthlyPayments.finalNetWorth)}</strong>
               </td>
               <td className="scenario-value total-value">
                 <strong>{formatCurrency(payOffEarly.finalNetWorth)}</strong>
               </td>
               <td className="scenario-value total-value">
                 <strong>{formatCurrency(investAndPay.finalNetWorth)}</strong>
-              </td>
-              <td className={`difference-value total-diff ${netWorthDiff > 0 ? 'better' : netWorthDiff < 0 ? 'worse' : 'equal'}`}>
-                <strong className="diff-amount">
-                  {formatDifference(netWorthDiff)}
-                  {netWorthDiff !== 0 && (
-                    <span className={`diff-indicator ${netWorthDiff > 0 ? 'better' : 'worse'}`}>
-                      {' '}{netWorthDiff > 0 ? '↑' : '↓'}
-                    </span>
-                  )}
-                </strong>
               </td>
             </tr>
           </tbody>

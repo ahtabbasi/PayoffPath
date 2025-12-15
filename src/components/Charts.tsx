@@ -28,12 +28,13 @@ ChartJS.register(
 );
 
 interface ChartsProps {
+  onlyMonthlyPayments: ScenarioResult;
   payOffEarly: ScenarioResult;
   investAndPay: ScenarioResult;
   yearsLeft: number;
 }
 
-export const Charts: React.FC<ChartsProps> = ({ payOffEarly, investAndPay, yearsLeft }) => {
+export const Charts: React.FC<ChartsProps> = ({ onlyMonthlyPayments, payOffEarly, investAndPay, yearsLeft }) => {
   // Prepare data for line chart (net worth over time)
   const getYearlyLabels = () => {
     return Array.from({ length: yearsLeft }, (_, i) => `Year ${i + 1}`);
@@ -51,12 +52,21 @@ export const Charts: React.FC<ChartsProps> = ({ payOffEarly, investAndPay, years
   };
 
   const labels = getYearlyLabels();
+  const onlyMonthlyPaymentsNetWorth = getYearlyNetWorth(onlyMonthlyPayments.monthlySnapshots);
   const payOffEarlyNetWorth = getYearlyNetWorth(payOffEarly.monthlySnapshots);
   const investAndPayNetWorth = getYearlyNetWorth(investAndPay.monthlySnapshots);
 
   const lineChartData = {
     labels,
     datasets: [
+      {
+        label: 'Only Monthly Payments - Net Worth',
+        data: onlyMonthlyPaymentsNetWorth,
+        borderColor: 'rgb(46, 204, 113)',
+        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+        fill: true,
+        tension: 0.4,
+      },
       {
         label: 'Pay Off Early - Net Worth',
         data: payOffEarlyNetWorth,
@@ -117,6 +127,18 @@ export const Charts: React.FC<ChartsProps> = ({ payOffEarly, investAndPay, years
   const barChartData = {
     labels: ['Total Payments', 'Total Interest', 'Tax Rebate', 'Final Investment', 'Contributions', 'Final Net Worth'],
     datasets: [
+      {
+        label: 'Only Monthly Payments',
+        data: [
+          onlyMonthlyPayments.totalPayments,
+          onlyMonthlyPayments.totalInterestPaid,
+          onlyMonthlyPayments.totalTaxRebate,
+          onlyMonthlyPayments.finalInvestmentValue,
+          onlyMonthlyPayments.totalContributions,
+          onlyMonthlyPayments.finalNetWorth,
+        ],
+        backgroundColor: 'rgba(46, 204, 113, 0.7)',
+      },
       {
         label: 'Pay Off Early',
         data: [

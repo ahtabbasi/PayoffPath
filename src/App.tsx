@@ -36,6 +36,7 @@ function App() {
         <InputForm inputs={inputs} onChange={setInputs} />
         
         <ComparisonSummary
+          onlyMonthlyPayments={comparison.onlyMonthlyPayments}
           payOffEarly={comparison.payOffEarly}
           investAndPay={comparison.investAndPay}
           bestScenario={comparison.bestScenario}
@@ -43,6 +44,7 @@ function App() {
         />
 
         <Charts
+          onlyMonthlyPayments={comparison.onlyMonthlyPayments}
           payOffEarly={comparison.payOffEarly}
           investAndPay={comparison.investAndPay}
           yearsLeft={inputs.yearsLeft}

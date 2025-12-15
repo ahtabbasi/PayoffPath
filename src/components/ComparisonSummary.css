@@ -83,32 +83,39 @@
   border-bottom: 2px solid #f39c12;
 }
 
-/* Highlight entire column for best scenario - Pay Off Early (2nd column) */
-.comparison-table tbody tr.best-column-payoff td:nth-child(2) {
+/* Highlight entire column for best scenario - Only Monthly Payments (2nd column) */
+.comparison-table tbody tr.best-column-monthly td:nth-child(2) {
   background-color: #fff3cd;
   border-left: 2px solid #f39c12;
   border-right: 2px solid #f39c12;
 }
 
-.comparison-table tbody tr.best-column-payoff.total-row td:nth-child(2) {
+.comparison-table tbody tr.best-column-monthly.total-row td:nth-child(2) {
   border-bottom: 2px solid #f39c12;
 }
 
-/* Highlight entire column for best scenario - Invest & Pay (3rd column) */
-.comparison-table tbody tr.best-column-invest td:nth-child(3) {
+/* Highlight entire column for best scenario - Pay Off Early (3rd column) */
+.comparison-table tbody tr.best-column-payoff td:nth-child(3) {
   background-color: #fff3cd;
   border-left: 2px solid #f39c12;
   border-right: 2px solid #f39c12;
 }
 
-.comparison-table tbody tr.best-column-invest.total-row td:nth-child(3) {
+.comparison-table tbody tr.best-column-payoff.total-row td:nth-child(3) {
   border-bottom: 2px solid #f39c12;
 }
 
-.comparison-table th.difference-column {
-  width: 20%;
-  text-align: center;
+/* Highlight entire column for best scenario - Invest & Pay (4th column) */
+.comparison-table tbody tr.best-column-invest td:nth-child(4) {
+  background-color: #fff3cd;
+  border-left: 2px solid #f39c12;
+  border-right: 2px solid #f39c12;
 }
+
+.comparison-table tbody tr.best-column-invest.total-row td:nth-child(4) {
+  border-bottom: 2px solid #f39c12;
+}
+
 
 .scenario-header {
   display: flex;

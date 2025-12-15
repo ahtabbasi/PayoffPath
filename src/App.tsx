@@ -8,12 +8,12 @@ import './App.css';
 
 const defaultInputs: MortgageInputs = {
   remainingPrincipal: 300000,
-  yearsLeft: 20,
-  interestRate: 4.5,
+  yearsLeft: 30,
+  interestRate: 4,
   taxRebatePercentage: 37,
-  investmentReturnRate: 7,
-  totalMoneyInHand: 50000,
-  houseValue: 400000,
+  investmentReturnRate: 5,
+  totalMoneyInHand: 300000,
+  houseValue: 300000,
 };
 
 const STORAGE_KEY = 'mortgageCalculatorInputs';

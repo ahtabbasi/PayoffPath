@@ -1,6 +1,6 @@
 # Mortgage Payoff vs Investment Calculator
 
-A single-page web application that compares paying off your mortgage early versus investing that money in an interest-generating investment.
+A single-page web application that compares paying off your mortgage early versus investing and paying from that investment.
 
 ## Features
 
@@ -19,14 +19,14 @@ A single-page web application that compares paying off your mortgage early versu
 - **Remaining Principal**: Current mortgage balance
 - **Years Left**: Remaining mortgage term
 - **Annual Interest Rate**: Mortgage interest rate (percentage)
-- **Current Monthly Payment**: Your current monthly mortgage payment
-- **Tax Rebate Percentage**: Percentage of mortgage interest returned as tax rebate
+- **Tax Rebate on Interest**: Percentage of mortgage interest returned as tax rebate
 - **Annual Investment Return Rate**: Expected annual return on investment (percentage)
-- **Total Money in Hand**: Lump sum available for payment or investment
+- **Total Money Available for Lump Sum**: Lump sum available for payment or investment
+- **House Value**: Current value of the house
 
 ## Calculations
 
-- **Mortgage Type**: Annuity mortgage with fixed monthly payments
+- **Mortgage Type**: Annuity mortgage with fixed monthly payments (calculated from principal, rate, and term)
 - **Investment Compounding**: Monthly compounding
 - **Tax Treatment**: Investment returns are not taxed
 - **Time Horizon**: Comparison over the remaining mortgage term only

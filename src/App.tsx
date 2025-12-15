@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { MortgageInputs, calculateComparison } from './utils/mortgageCalculations';
 import { InputForm } from './components/InputForm';
 import { ComparisonSummary } from './components/ComparisonSummary';
@@ -8,7 +8,7 @@ import './App.css';
 
 const defaultInputs: MortgageInputs = {
   remainingPrincipal: 300000,
-  yearsLeft: 30,
+  yearsLeft: 20,
   interestRate: 4,
   taxRebatePercentage: 37,
   investmentReturnRate: 5,
@@ -16,30 +16,8 @@ const defaultInputs: MortgageInputs = {
   houseValue: 300000,
 };
 
-const STORAGE_KEY = 'mortgageCalculatorInputs';
-
 function App() {
-  // Load inputs from localStorage on mount, fallback to defaults
-  const [inputs, setInputs] = useState<MortgageInputs>(() => {
-    try {
-      const savedInputs = localStorage.getItem(STORAGE_KEY);
-      if (savedInputs) {
-        return JSON.parse(savedInputs);
-      }
-    } catch (error) {
-      console.error('Error loading saved inputs:', error);
-    }
-    return defaultInputs;
-  });
-
-  // Save inputs to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(inputs));
-    } catch (error) {
-      console.error('Error saving inputs to localStorage:', error);
-    }
-  }, [inputs]);
+  const [inputs, setInputs] = useState<MortgageInputs>(defaultInputs);
 
   const comparison = useMemo(() => {
     return calculateComparison(inputs);
@@ -76,6 +54,27 @@ function App() {
           houseValue={inputs.houseValue}
         />
       </main>
+
+      <footer className="app-footer">
+        <p>
+          Based on{' '}
+          <a
+            href="https://github.com/ahtabbasi/PayoffPath"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            PayoffPath
+          </a>
+          {' '}by{' '}
+          <a
+            href="https://github.com/ahtabbasi"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ahtabbasi
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }

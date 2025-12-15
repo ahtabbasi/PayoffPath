@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { MortgageInputs, calculateComparison } from './utils/mortgageCalculations';
 import { InputForm } from './components/InputForm';
 import { ComparisonSummary } from './components/ComparisonSummary';
